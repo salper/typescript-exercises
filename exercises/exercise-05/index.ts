@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import chalk from 'chalk'
 
 /*
 
@@ -34,57 +34,87 @@ Run:
 */
 
 interface User {
-    type: 'user';
-    name: string;
-    age: number;
-    occupation: string;
+  type: 'user'
+  name: string
+  age: number
+  occupation: string
 }
 
 interface Admin {
-    type: 'admin';
-    name: string;
-    age: number;
-    role: string;
+  type: 'admin'
+  name: string
+  age: number
+  role: string
 }
 
-type Person = User | Admin;
+type Person = User | Admin
 
 const persons: Person[] = [
-    { type: 'user', name: 'Max Mustermann', age: 25, occupation: 'Chimney sweep' },
-    { type: 'admin', name: 'Jane Doe', age: 32, role: 'Administrator' },
-    { type: 'user', name: 'Kate Müller', age: 23, occupation: 'Astronaut' },
-    { type: 'admin', name: 'Bruce Willis', age: 64, role: 'World saver' },
-    { type: 'user', name: 'Wilson', age: 23, occupation: 'Ball' },
-    { type: 'admin', name: 'Agent Smith', age: 23, role: 'Anti-virus engineer' }
-];
+  {
+    type: 'user',
+    name: 'Max Mustermann',
+    age: 25,
+    occupation: 'Chimney sweep',
+  },
+  { type: 'admin', name: 'Jane Doe', age: 32, role: 'Administrator' },
+  { type: 'user', name: 'Kate Müller', age: 23, occupation: 'Astronaut' },
+  { type: 'admin', name: 'Bruce Willis', age: 64, role: 'World saver' },
+  { type: 'user', name: 'Wilson', age: 23, occupation: 'Ball' },
+  { type: 'admin', name: 'Agent Smith', age: 23, role: 'Anti-virus engineer' },
+]
 
 function logPerson(person: Person) {
-    console.log(
-        ` - ${chalk.green(person.name)}, ${person.age}, ${person.type === 'admin' ? person.role : person.occupation}`
-    );
+  console.log(
+    ` - ${chalk.green(person.name)}, ${person.age}, ${
+      person.type === 'admin' ? person.role : person.occupation
+    }`,
+  )
 }
 
-function filterPersons(persons: Person[], personType: string, criteria: unknown): unknown[] {
-    return persons
-        .filter((person) => person.type === personType)
-        .filter((person) => {
-            let criteriaKeys = Object.keys(criteria) as (keyof Person)[];
-            return criteriaKeys.every((fieldName) => {
-                return person[fieldName] === criteria[fieldName];
-            });
-        });
+const getObjectKeys = <T>(o: T): Array<keyof T> =>
+  Object.keys(o) as Array<keyof T>
+
+function filterPersons(
+  persons: Array<Person>,
+  personType: 'admin',
+  criteria: Partial<Admin>,
+): Array<Admin>
+
+function filterPersons(
+  persons: Array<Person>,
+  personType: 'user',
+  criteria: Partial<User>,
+): Array<User>
+
+function filterPersons(
+  persons: Array<Person>,
+  personType: string,
+  criteria: Partial<Person>,
+): Array<unknown> {
+  return persons
+    .filter((person: Person) => person.type === personType)
+    .filter((person: Person) => {
+      let criteriaKeys = getObjectKeys(criteria)
+      return criteriaKeys.every((fieldName) => {
+        return person[fieldName] === criteria[fieldName]
+      })
+    })
 }
 
-let usersOfAge23: User[] = filterPersons(persons, 'user', { age: 23 });
-let adminsOfAge23: Admin[] = filterPersons(persons, 'admin', { age: 23 });
+let usersOfAge23: Array<User> = filterPersons(persons, 'user', {
+  age: 23,
+})
+let adminsOfAge23: Array<Admin> = filterPersons(persons, 'admin', {
+  age: 23,
+})
 
-console.log(chalk.yellow('Users of age 23:'));
-usersOfAge23.forEach(logPerson);
+console.log(chalk.yellow('Users of age 23:'))
+usersOfAge23.forEach(logPerson)
 
-console.log();
+console.log()
 
-console.log(chalk.yellow('Admins of age 23:'));
-adminsOfAge23.forEach(logPerson);
+console.log(chalk.yellow('Admins of age 23:'))
+adminsOfAge23.forEach(logPerson)
 
 // In case if you are stuck:
 // https://www.typescriptlang.org/docs/handbook/functions.html#overloads
